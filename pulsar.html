@@ -206,7 +206,11 @@ a{color:inherit;text-decoration:none}
 .sk-lines{flex:1;display:flex;flex-direction:column;gap:7px}
 
 /* Убираем старые стили */
-.sb-item,.dm-item,.sb-unread-badge{display:none!important}
+.sb-item,.sb-unread-badge{display:none!important}
+/* dm-item используется в поиске DM — НЕ скрываем */
+.dm-item .presence-dot{position:absolute;bottom:-2px;right:-2px;width:8px;height:8px;border-radius:50%;border:2px solid var(--surface-2)}
+.dm-avatar{width:38px;height:38px;border-radius:10px;background:var(--accent-dim);border:1px solid var(--accent-mid);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:var(--accent);flex-shrink:0;position:relative;overflow:hidden}
+.dm-avatar img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
 
 /* User panel (нижняя панель) */
 .user-avatar{
@@ -554,25 +558,72 @@ a{color:inherit;text-decoration:none}
 .btn-danger{background:rgba(208,96,112,.12);color:var(--red);border:1px solid rgba(208,96,112,.2)}.btn-danger:hover{background:rgba(208,96,112,.2)}
 
 /* Profile */
-.profile-header{display:flex;gap:16px;align-items:flex-start;margin-bottom:18px}
-.profile-avatar-big{width:72px;height:72px;border-radius:14px;background:var(--accent-dim);border:2px solid var(--accent-mid);display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:700;color:var(--accent);overflow:hidden;flex-shrink:0;position:relative;cursor:pointer;transition:border-color var(--tf)}
-.profile-avatar-big:hover{border-color:var(--accent)}
-.profile-avatar-big img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
-.profile-meta{flex:1;min-width:0}
-.profile-name{font-family:var(--font-display);font-weight:800;font-size:1.1rem;margin-bottom:2px}
-.profile-email{font-size:.72rem;color:var(--muted);margin-bottom:8px}
-.status-pick{display:flex;gap:4px}
-.status-opt{width:26px;height:26px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:border-color var(--tf),transform var(--tf);display:flex;align-items:center;justify-content:center;font-size:.82rem}
-.status-opt:hover{transform:scale(1.12)}
-.status-opt.active{border-color:var(--accent)}
-.status-opt[data-s="online"]{background:rgba(76,175,130,.2)}
-.status-opt[data-s="away"]{background:rgba(212,168,67,.2)}
-.status-opt[data-s="offline"]{background:rgba(72,70,63,.3)}
-.profile-divider{height:1px;background:var(--border);margin:14px 0}
-.profile-stat{display:flex;gap:20px;margin-bottom:14px}
-.profile-stat-item{text-align:center}
-.profile-stat-num{font-family:var(--font-display);font-weight:800;font-size:1.1rem;color:var(--accent)}
-.profile-stat-label{font-size:.58rem;color:var(--muted-2);text-transform:uppercase;letter-spacing:.1em}
+/* ── PROFILE MODAL (Discord-style) ── */
+#modal-profile .modal{width:min(480px,calc(100vw - 20px));overflow:hidden;padding:0;border-radius:var(--r)}
+#modal-profile .modal::before{display:none}
+#modal-profile .modal-head,#modal-profile .modal-body{display:none}
+
+/* Баннер */
+.prof-banner{height:100px;background:linear-gradient(135deg,#1a1428 0%,#2a1f0e 50%,#0e1a28 100%);position:relative;flex-shrink:0;overflow:hidden}
+.prof-banner-gradient{position:absolute;inset:0;background:linear-gradient(135deg,rgba(200,169,110,.25) 0%,rgba(106,159,216,.15) 60%,rgba(155,127,212,.15) 100%)}
+.prof-close-btn{position:absolute;top:10px;right:10px;z-index:10;width:28px;height:28px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.7);cursor:pointer;transition:background var(--tf),color var(--tf)}
+.prof-close-btn:hover{background:rgba(0,0,0,.8);color:#fff}
+
+/* Аватар поверх баннера */
+.prof-av-wrap{position:absolute;bottom:-22px;left:20px;width:76px;height:76px;border-radius:50%;background:var(--surface-3);border:4px solid var(--surface);display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:800;color:var(--accent);overflow:visible;cursor:pointer;z-index:2}
+.prof-av-inner{width:100%;height:100%;border-radius:50%;overflow:hidden;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:800;color:var(--accent);position:relative}
+.prof-av-inner img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:50%}
+.prof-av-wrap:hover .prof-av-inner::after{content:'📷';position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;font-size:1.1rem;border-radius:50%}
+.prof-av-status{position:absolute;bottom:2px;right:2px;width:18px;height:18px;border-radius:50%;border:3px solid var(--surface);z-index:3;transition:background .3s}
+.prof-av-status.online{background:var(--green)}
+.prof-av-status.away{background:#d4a843}
+.prof-av-status.offline{background:var(--muted-2)}
+
+/* Тело */
+.prof-body{padding:30px 20px 0}
+.prof-name-row{display:flex;align-items:center;gap:8px;margin-bottom:2px;flex-wrap:wrap}
+.prof-name{font-family:var(--font-display);font-weight:800;font-size:1.12rem;color:var(--text);line-height:1.2}
+.prof-role-badge{font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:4px;font-weight:700;flex-shrink:0}
+.prof-role-badge.admin{background:rgba(208,96,112,.12);color:var(--red);border:1px solid rgba(208,96,112,.25)}
+.prof-role-badge.user{background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent-mid)}
+.prof-username{font-size:.72rem;color:var(--muted);margin-bottom:14px}
+
+/* Статы */
+.prof-stats{display:flex;gap:6px;margin-bottom:14px}
+.prof-stat{flex:1;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r);padding:10px 0;text-align:center;transition:border-color var(--tf)}
+.prof-stat:hover{border-color:var(--border-h)}
+.prof-stat-num{font-family:var(--font-display);font-weight:800;font-size:1rem;color:var(--accent)}
+.prof-stat-label{font-size:.56rem;color:var(--muted-2);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+
+/* Секция */
+.prof-section{margin-bottom:14px}
+.prof-section-title{font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted-2);margin-bottom:6px;font-weight:600}
+.prof-bio{font-size:.78rem;color:var(--muted);line-height:1.6;min-height:18px}
+.prof-bio.empty{font-style:italic;color:var(--muted-3)}
+.prof-divider{height:1px;background:var(--border);margin:14px 0}
+
+/* Статус-пикер */
+.prof-status-btns{display:flex;gap:4px;flex-wrap:wrap}
+.prof-status-btn{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;font-size:.66rem;border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all var(--tf);background:none}
+.prof-status-btn:hover{border-color:var(--border-h);color:var(--text)}
+.prof-status-btn.active.online{background:rgba(76,175,130,.08);border-color:rgba(76,175,130,.4);color:var(--green)}
+.prof-status-btn.active.away{background:rgba(212,168,67,.08);border-color:rgba(212,168,67,.4);color:#d4a843}
+.prof-status-btn.active.offline{background:rgba(72,70,63,.15);border-color:rgba(72,70,63,.5);color:var(--muted)}
+.prof-sdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.prof-status-btn.active.online .prof-sdot{background:var(--green)}
+.prof-status-btn.active.away .prof-sdot{background:#d4a843}
+.prof-status-btn.active.offline .prof-sdot{background:var(--muted-2)}
+.prof-status-btn:not(.active) .prof-sdot{background:var(--muted-2)}
+
+/* Действия чужой профиль */
+.prof-actions{display:flex;gap:8px;margin-bottom:14px}
+.prof-action-btn{flex:1;padding:9px;border-radius:var(--r);font-size:.72rem;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:opacity var(--tf),background var(--tf);border:none}
+.prof-action-btn.primary{background:var(--accent);color:#08080d}.prof-action-btn.primary:hover{opacity:.85}
+.prof-action-btn.ghost{background:var(--surface-2);color:var(--muted);border:1px solid var(--border)}.prof-action-btn.ghost:hover{border-color:var(--border-h);color:var(--text)}
+
+/* Footer */
+.prof-foot{display:flex;gap:8px;justify-content:flex-end;padding:14px 20px;border-top:1px solid var(--border)}
+
 
 /* Pinned */
 .pinned-list{display:flex;flex-direction:column;gap:8px;max-height:360px;overflow-y:auto}
@@ -906,27 +957,100 @@ a{color:inherit;text-decoration:none}
   </div>
 </div>
 <div class="modal-overlay" id="modal-profile">
-  <div class="modal">
-    <button class="modal-close" data-modal="modal-profile"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
-    <div class="modal-head"><div class="modal-title" id="profile-modal-title">Мой профиль</div></div>
-    <div class="modal-body">
-      <div class="profile-header">
-        <div class="profile-avatar-big" id="profile-av-big">?</div>
-        <div class="profile-meta">
-          <div class="profile-name" id="profile-display-name">—</div>
-          <div class="profile-email" id="profile-email-label">—</div>
-          <div id="profile-status-row"><div class="status-pick"><button class="status-opt" data-s="online" title="В сети">🟢</button><button class="status-opt" data-s="away" title="Отошёл">🟡</button><button class="status-opt" data-s="offline" title="Не беспокоить">⚫</button></div></div>
-        </div>
-      </div>
-      <div class="profile-stat"><div class="profile-stat-item"><div class="profile-stat-num" id="stat-msgs">—</div><div class="profile-stat-label">Сообщений</div></div><div class="profile-stat-item"><div class="profile-stat-num" id="stat-joined">—</div><div class="profile-stat-label">Присоединился</div></div></div>
-      <div class="profile-divider"></div>
-      <div id="profile-edit-section">
-        <div class="field"><label class="field-label">Отображаемое имя</label><input class="field-input" id="profile-name-input" placeholder="Ваше имя"/></div>
-        <div class="field"><label class="field-label">Биография</label><textarea class="field-input" id="profile-bio-input" placeholder="Расскажите о себе…" rows="2" style="resize:none"></textarea></div>
-        <div class="field"><label class="field-label">Аватар (URL)</label><input class="field-input" id="profile-avatar-url" placeholder="https://…"/></div>
+  <div class="modal" style="padding:0">
+    <!-- Баннер -->
+    <div class="prof-banner">
+      <div class="prof-banner-gradient"></div>
+      <button class="prof-close-btn" data-modal="modal-profile">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1L1 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+      <!-- Аватар -->
+      <div class="prof-av-wrap" id="prof-av-wrap">
+        <div class="prof-av-inner" id="profile-av-big">?</div>
+        <div class="prof-av-status offline" id="prof-av-status"></div>
       </div>
     </div>
-    <div class="modal-foot" id="profile-foot"><button class="btn btn-ghost" data-modal="modal-profile">Отмена</button><button class="btn btn-primary" id="btn-save-profile">Сохранить</button></div>
+
+    <!-- Тело — прокручиваемое -->
+    <div style="overflow-y:auto;max-height:calc(90svh - 100px)">
+      <div class="prof-body">
+
+        <!-- Имя + роль -->
+        <div class="prof-name-row">
+          <div class="prof-name" id="profile-display-name">—</div>
+          <span class="prof-role-badge user" id="prof-role-badge">участник</span>
+        </div>
+        <div class="prof-username" id="profile-email-label">—</div>
+
+        <!-- Статы -->
+        <div class="prof-stats">
+          <div class="prof-stat"><div class="prof-stat-num" id="stat-msgs">—</div><div class="prof-stat-label">Сообщений</div></div>
+          <div class="prof-stat"><div class="prof-stat-num" id="stat-joined">—</div><div class="prof-stat-label">С нами</div></div>
+          <div class="prof-stat"><div class="prof-stat-num" id="stat-channels">—</div><div class="prof-stat-label">Каналов</div></div>
+        </div>
+
+        <!-- О себе -->
+        <div class="prof-section" id="prof-bio-section">
+          <div class="prof-section-title">О себе</div>
+          <div class="prof-bio empty" id="prof-bio-view">Нет информации</div>
+        </div>
+
+        <div class="prof-divider"></div>
+
+        <!-- Статус (только свой профиль) -->
+        <div class="prof-section" id="profile-status-row">
+          <div class="prof-section-title">Статус</div>
+          <div class="prof-status-btns">
+            <button class="prof-status-btn online" data-s="online"><span class="prof-sdot"></span>В сети</button>
+            <button class="prof-status-btn away"   data-s="away">  <span class="prof-sdot"></span>Отошёл</button>
+            <button class="prof-status-btn offline" data-s="offline"><span class="prof-sdot"></span>Не беспокоить</button>
+          </div>
+        </div>
+
+        <!-- Форма редактирования (только свой профиль) -->
+        <div id="profile-edit-section" class="prof-edit-wrap">
+          <div class="prof-divider"></div>
+          <div class="prof-section-title">Редактировать профиль</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div class="field" style="margin:0">
+              <label class="field-label">Отображаемое имя</label>
+              <input class="field-input" id="profile-name-input" placeholder="Ваше имя" autocomplete="off"/>
+            </div>
+            <div class="field" style="margin:0">
+              <label class="field-label">О себе</label>
+              <textarea class="field-input" id="profile-bio-input" placeholder="Расскажите о себе…" rows="3" style="resize:none;line-height:1.5"></textarea>
+            </div>
+            <div class="field" style="margin:0">
+              <label class="field-label">Аватар (URL изображения)</label>
+              <input class="field-input" id="profile-avatar-url" placeholder="https://…" type="url"/>
+              <div id="prof-av-preview-row" style="display:none;align-items:center;gap:8px;margin-top:8px">
+                <img id="prof-av-preview" src="" alt="" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid var(--border)"/>
+                <span style="font-size:.68rem;color:var(--muted)">Предпросмотр</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Действия для чужого профиля -->
+        <div class="prof-actions" id="prof-other-actions" style="display:none">
+          <button class="prof-action-btn primary" id="prof-btn-dm">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M1 8V3a2 2 0 012-2h8a2 2 0 012 2v5a2 2 0 01-2 2H9l-3 2v-2H3a2 2 0 01-2-2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+            Написать
+          </button>
+          <button class="prof-action-btn ghost" id="prof-btn-mention">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M9 7a2 2 0 11-4 0 2 2 0 014 0z" stroke="currentColor" stroke-width="1.2"/><path d="M11 7a4 4 0 10-1.5 3.1M11 7v2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+            Упомянуть
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="prof-foot" id="profile-foot">
+        <button class="btn btn-ghost" data-modal="modal-profile">Отмена</button>
+        <button class="btn btn-primary" id="btn-save-profile">Сохранить</button>
+      </div>
+    </div>
   </div>
 </div>
 <div class="modal-overlay" id="modal-pinned">
@@ -1697,52 +1821,107 @@ function updateMentionHighlight(){
 }
 
 /* ── PROFILE ── */
+/* ── PROFILE ── */
+function fillProfileModal(u, isOwn){
+  // Аватар
+  const avEl = $('profile-av-big');
+  avEl.textContent = '';
+  if(u.photoURL){ avEl.innerHTML = `<img src="${esc(u.photoURL)}" alt=""/>`; }
+  else { avEl.textContent = ini(u.displayName||u.email); }
+
+  // Статус-dot на аватаре
+  const statusDot = $('prof-av-status');
+  const st = u.presence?.status || (isOwn ? me.presence?.status : null) || 'offline';
+  statusDot.className = `prof-av-status ${st}`;
+
+  // Имя, email
+  $('profile-display-name').textContent = u.displayName || u.email || '—';
+  $('profile-email-label').textContent  = u.email || '';
+
+  // Роль
+  const badge = $('prof-role-badge');
+  badge.className = `prof-role-badge ${u.role==='admin'?'admin':'user'}`;
+  badge.textContent = u.role==='admin' ? 'администратор' : 'участник';
+
+  // Био
+  const bioEl = $('prof-bio-view');
+  const bio = u.bio || (isOwn ? me.bio : null) || '';
+  bioEl.textContent = bio || 'Нет информации';
+  bioEl.className = bio ? 'prof-bio' : 'prof-bio empty';
+
+  // Статы
+  $('stat-joined').textContent = u.createdAt ? fmtD(u.createdAt) : '—';
+  $('stat-msgs').textContent   = '—';
+  $('stat-channels').textContent = '—';
+
+  // Кликабельность аватара (только свой)
+  $('prof-av-wrap').style.cursor = isOwn ? 'pointer' : 'default';
+}
+
 async function openMyProfile(){
-  $('profile-modal-title').textContent='Мой профиль';
-  $('profile-av-big').innerHTML=me.photoURL?`<img src="${esc(me.photoURL)}" alt=""/>`:'';
-  if(!me.photoURL)$('profile-av-big').textContent=ini(me.displayName);
-  $('profile-display-name').textContent=me.displayName||'—';
-  $('profile-email-label').textContent=me.email||'';
-  $('profile-name-input').value=me.displayName||'';
-  $('profile-bio-input').value=me.bio||'';
-  $('profile-avatar-url').value=me.photoURL||'';
-  $('profile-status-row').style.display='';
-  $('profile-edit-section').style.display='';
-  $('profile-foot').style.display='';
-  document.querySelectorAll('.status-opt').forEach(b=>b.classList.remove('active'));
-  document.querySelector(`.status-opt[data-s="${me.presence?.status||'online'}"]`)?.classList.add('active');
-  $('stat-joined').textContent=me.createdAt?fmtD(me.createdAt):'—';
-  $('stat-msgs').textContent='—';
+  fillProfileModal(me, true);
+  $('profile-name-input').value  = me.displayName || '';
+  $('profile-bio-input').value   = me.bio || '';
+  $('profile-avatar-url').value  = me.photoURL || '';
+  updateProfAvPreview(me.photoURL);
+
+  // Статус-кнопки
+  const curStatus = me.presence?.status || 'online';
+  document.querySelectorAll('.prof-status-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.s === curStatus);
+  });
+
+  $('profile-status-row').style.display  = '';
+  $('profile-edit-section').style.display = '';
+  $('profile-foot').style.display         = '';
+  $('prof-other-actions').style.display   = 'none';
   openModal('modal-profile');
 }
+
 async function openUserProfile(uid){
-  if(uid===me.uid){openMyProfile();return;}
-  const u=allUsers[uid];if(!u)return;
-  $('profile-modal-title').textContent='Профиль';
-  $('profile-av-big').innerHTML=u.photoURL?`<img src="${esc(u.photoURL)}" alt=""/>`:'';
-  if(!u.photoURL)$('profile-av-big').textContent=ini(u.displayName||u.email);
-  $('profile-display-name').textContent=u.displayName||u.email||'—';
-  $('profile-email-label').textContent=u.email||'';
-  $('profile-status-row').style.display='none';
-  $('profile-edit-section').style.display='none';
-  $('profile-foot').style.display='none';
-  $('stat-joined').textContent=u.createdAt?fmtD(u.createdAt):'—';
-  $('stat-msgs').textContent='—';
+  if(uid === me.uid){ openMyProfile(); return; }
+  const u = allUsers[uid]; if(!u) return;
+  fillProfileModal(u, false);
+
+  $('profile-status-row').style.display  = 'none';
+  $('profile-edit-section').style.display = 'none';
+  $('profile-foot').style.display         = 'none';
+  $('prof-other-actions').style.display   = 'flex';
+
+  // Кнопка "Написать"
+  $('prof-btn-dm').onclick = ()=>{ closeModal('modal-profile'); openOrCreateDM(uid); };
+  // Кнопка "Упомянуть"
+  $('prof-btn-mention').onclick = ()=>{
+    closeModal('modal-profile');
+    const inp = $('msg-input');
+    inp.value += `@${u.displayName} `;
+    inp.focus();
+  };
   openModal('modal-profile');
 }
+
+function updateProfAvPreview(url){
+  const row = $('prof-av-preview-row');
+  const img = $('prof-av-preview');
+  if(url){ img.src=url; row.style.display='flex'; }
+  else row.style.display='none';
+}
+
 async function saveProfile(){
-  const name=$('profile-name-input').value.trim(),bio=$('profile-bio-input').value.trim(),photoURL=$('profile-avatar-url').value.trim();
-  if(!name){toast('Введите имя','err');return;}
-  const btn=$('btn-save-profile');btn.textContent='Сохранение…';btn.disabled=true;
+  const name     = $('profile-name-input').value.trim();
+  const bio      = $('profile-bio-input').value.trim();
+  const photoURL = $('profile-avatar-url').value.trim();
+  if(!name){ toast('Введите имя','err'); return; }
+  const btn = $('btn-save-profile'); btn.textContent='Сохранение…'; btn.disabled=true;
   try{
     await updateDoc(doc(fdb,'users',me.uid),{displayName:name,bio,photoURL,updatedAt:serverTimestamp()});
     await updateProfile(auth.currentUser,{displayName:name,photoURL:photoURL||null});
-    me.displayName=name;me.bio=bio;me.photoURL=photoURL;
-    $('my-name').textContent=name;updateMyAvatarUI();
+    me.displayName=name; me.bio=bio; me.photoURL=photoURL;
+    $('my-name').textContent=name; updateMyAvatarUI();
     await updatePresence(me.presence?.status||'online');
-    closeModal('modal-profile');toast('Профиль обновлён ✓','ok');
-  }catch(e){toast('Ошибка: '+e.message,'err');}
-  btn.textContent='Сохранить';btn.disabled=false;
+    closeModal('modal-profile'); toast('Профиль обновлён ✓','ok');
+  }catch(e){ toast('Ошибка: '+e.message,'err'); }
+  btn.textContent='Сохранить'; btn.disabled=false;
 }
 
 /* ── CREATE CHANNEL ── */
@@ -1937,7 +2116,16 @@ function initUI(){
   $('my-avatar').addEventListener('click',openMyProfile);
   $('mob-btn-profile').addEventListener('click',openMyProfile);
   $('btn-save-profile').addEventListener('click',saveProfile);
-  document.querySelectorAll('.status-opt').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.status-opt').forEach(x=>x.classList.remove('active'));b.classList.add('active');updatePresence(b.dataset.s);me.presence={...me.presence,status:b.dataset.s};}));
+  // Статус-кнопки в профиле
+  document.querySelectorAll('.prof-status-btn').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('.prof-status-btn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    updatePresence(b.dataset.s);
+    if(me.presence) me.presence.status=b.dataset.s; else me.presence={status:b.dataset.s};
+  }));
+
+  // Предпросмотр аватара при вводе URL
+  $('profile-avatar-url').addEventListener('input', e=>updateProfAvPreview(e.target.value.trim()));
 
   // Thread
   $('thread-close').addEventListener('click',closeThread);
