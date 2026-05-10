@@ -18,7 +18,7 @@
   --green:#4caf82;--red:#d06070;--blue:#6a9fd8;--purple:#9b7fd4;
   --font-display:'Syne',sans-serif;--font:'DM Sans',system-ui,sans-serif;
   --mono:'JetBrains Mono','Fira Code','Consolas',monospace;
-  --sb-w:260px;--topbar-h:52px;--mob-nav-h:58px;--thread-w:340px;
+  --sb-w:280px;--topbar-h:52px;--mob-nav-h:58px;--thread-w:340px;
   --t:.22s;--tf:.14s;--ease:cubic-bezier(.4,0,.2,1);--r:6px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -63,23 +63,88 @@ a{color:inherit;text-decoration:none}
 .sb-label{display:flex;align-items:center;justify-content:space-between;padding:8px 14px 4px;font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted-2)}
 .sb-label-add{width:20px;height:20px;display:flex;align-items:center;justify-content:center;border-radius:4px;transition:background var(--tf),color var(--tf);color:var(--muted-2);font-size:15px;line-height:1}
 .sb-label-add:hover{background:var(--surface-3);color:var(--accent)}
-.sb-item{display:flex;align-items:center;gap:8px;padding:6px 10px 6px 14px;font-size:.76rem;color:var(--muted);cursor:pointer;border-radius:var(--r);margin:1px 6px;transition:background var(--tf),color var(--tf);position:relative;user-select:none}
-.sb-item:hover{background:var(--surface-2);color:var(--text)}
-.sb-item.active{background:var(--accent-dim);color:var(--text)}
-.sb-item.active::before{content:'';position:absolute;left:-6px;top:4px;bottom:4px;width:2px;background:var(--accent);border-radius:1px}
-.sb-item-icon{font-size:.72rem;width:16px;text-align:center;flex-shrink:0;opacity:.6}
-.sb-item.active .sb-item-icon{opacity:1}
-.sb-item-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sb-unread-badge{background:var(--red);color:#fff;font-size:.5rem;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 4px;flex-shrink:0}
-.dm-item{display:flex;align-items:center;gap:9px;padding:6px 10px 6px 14px;cursor:pointer;border-radius:var(--r);margin:1px 6px;transition:background var(--tf);user-select:none}
-.dm-item:hover{background:var(--surface-2)}
-.dm-item.active{background:var(--accent-dim)}
-.dm-avatar{width:26px;height:26px;border-radius:7px;background:var(--surface-3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:600;color:var(--accent);flex-shrink:0;position:relative;overflow:hidden}
-.dm-avatar img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
-.presence-dot{position:absolute;bottom:-2px;right:-2px;width:8px;height:8px;border-radius:50%;border:2px solid var(--surface)}
+
+/* ── CHAT CARD (единый стиль для каналов и DM) ── */
+.ch-card{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 10px 8px 10px;
+  cursor:pointer;border-radius:var(--r);margin:1px 6px;
+  transition:background var(--tf);position:relative;user-select:none;
+  min-width:0;
+}
+.ch-card:hover{background:var(--surface-2)}
+.ch-card.active{background:var(--accent-dim)}
+.ch-card.active::before{
+  content:'';position:absolute;left:-6px;top:6px;bottom:6px;
+  width:2px;background:var(--accent);border-radius:1px;
+}
+
+/* Иконка канала (квадрат с #) */
+.ch-icon-box{
+  width:38px;height:38px;border-radius:10px;
+  background:var(--surface-3);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.82rem;color:var(--muted);flex-shrink:0;
+  transition:border-color var(--tf),color var(--tf);font-weight:600;
+}
+.ch-card.active .ch-icon-box,.ch-card:hover .ch-icon-box{border-color:var(--border-h);color:var(--text)}
+.ch-card.active .ch-icon-box{background:var(--accent-dim);color:var(--accent);border-color:var(--accent-mid)}
+
+/* Аватар DM */
+.ch-avatar{
+  width:38px;height:38px;border-radius:11px;
+  background:var(--surface-3);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;font-weight:700;color:var(--accent);
+  flex-shrink:0;position:relative;overflow:hidden;
+  transition:border-color var(--tf);
+}
+.ch-avatar img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.ch-card.active .ch-avatar{border-color:var(--accent-mid)}
+
+/* Presence dot на аватаре DM */
+.presence-dot{position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-radius:50%;border:2px solid var(--surface)}
 .presence-dot.online{background:var(--green)}.presence-dot.away{background:#d4a843}.presence-dot.offline{background:var(--muted-2)}
-.dm-name{font-size:.75rem;color:var(--muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.dm-item.active .dm-name,.dm-item:hover .dm-name{color:var(--text)}
+.ch-card.active .presence-dot{border-color:var(--accent-dim)}
+
+/* Текстовая часть */
+.ch-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.ch-top{display:flex;align-items:center;gap:6px}
+.ch-name{font-size:.76rem;font-weight:500;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.2}
+.ch-card:not(.active) .ch-name{color:var(--muted)}
+.ch-card:hover .ch-name,.ch-card.active .ch-name{color:var(--text)}
+.ch-time{font-size:.58rem;color:var(--muted-2);white-space:nowrap;flex-shrink:0;line-height:1.2}
+
+/* Превью последнего сообщения */
+.ch-preview{
+  display:flex;align-items:center;gap:4px;
+  font-size:.68rem;color:var(--muted-2);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  line-height:1.3;
+}
+.ch-preview-author{color:var(--muted);font-weight:500;flex-shrink:0}
+.ch-preview-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ch-preview.no-msgs{font-style:italic;color:var(--muted-3)}
+
+/* Unread badge */
+.ch-badge{
+  background:var(--red);color:#fff;
+  font-size:.5rem;font-weight:700;
+  min-width:18px;height:18px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  padding:0 5px;flex-shrink:0;line-height:1;
+  box-shadow:0 2px 6px rgba(208,96,112,.4);
+}
+/* Маленькая точка непрочитанного (без числа) */
+.ch-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--accent);flex-shrink:0;
+}
+
+/* Убираем старые стили которые больше не нужны */
+.sb-item{display:none}
+.dm-item{display:none}
+.sb-unread-badge{display:none}
 
 /* User panel */
 .user-panel{height:56px;border-top:1px solid var(--border);display:flex;align-items:center;gap:9px;padding:0 10px;flex-shrink:0;position:relative;z-index:1;background:rgba(8,8,13,.8);backdrop-filter:blur(8px)}
@@ -494,8 +559,7 @@ a{color:inherit;text-decoration:none}
 .topbar-mob-menu:hover{background:var(--surface-2);color:var(--text)}
 
 @media(max-width:780px){
-  :root{--sb-w:min(300px,100vw);--thread-w:100vw}
-  #shell{grid-template-columns:1fr;grid-template-areas:"main"}
+  :root{--sb-w:min(300px,100vw);--thread-w:100vw}  #shell{grid-template-columns:1fr;grid-template-areas:"main"}
   #shell.thread-open{grid-template-columns:1fr;grid-template-areas:"main"}
   #sidebar{position:fixed;top:0;left:0;bottom:var(--mob-nav-h);width:var(--sb-w);transform:translateX(-100%);transition:transform .28s cubic-bezier(.32,.72,0,1);z-index:200}
   #sidebar.open{transform:translateX(0)}
@@ -979,38 +1043,115 @@ function startChannelListener(){
   },e=>console.error('channels:',e));
 }
 
-/* ── RENDER CHANNELS ── */
-function renderChannelList(chs){
-  const list=$('channel-list');
-  if(!chs.length){list.innerHTML='<div style="padding:6px 14px;font-size:.68rem;color:var(--muted-2)">Каналов нет</div>';return;}
-  list.innerHTML=chs.map(ch=>{
-    const uc=unreadCounts[ch.id]||0;
-    return`<div class="sb-item ${currentCh?.id===ch.id?'active':''}" data-chid="${esc(ch.id)}" role="button" tabindex="0">
-      <span class="sb-item-icon">${ch.type==='private'?'🔒':'#'}</span>
-      <span class="sb-item-name">${esc(ch.name)}</span>
-      ${uc>0&&currentCh?.id!==ch.id?`<span class="sb-unread-badge">${uc>99?'99+':uc}</span>`:''}
-    </div>`;
-  }).join('');
-  list.querySelectorAll('.sb-item').forEach(el=>el.addEventListener('click',()=>openChannel(el.dataset.chid)));
+/* ── HELPERS FOR SIDEBAR CARDS ── */
+function fmtSbTime(ts){
+  if(!ts) return '';
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  const now = new Date();
+  const diff = Math.floor((now - d) / 86400000);
+  if(diff === 0) return d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+  if(diff === 1) return 'вчера';
+  if(diff < 7)  return d.toLocaleDateString('ru-RU',{weekday:'short'});
+  return d.toLocaleDateString('ru-RU',{day:'numeric',month:'numeric'});
 }
 
-let _dmChs=[];
-function renderDMListFromChannels(dms){_dmChs=dms;renderDMList();}
-function renderDMList(){
-  const list=$('dm-list');
-  if(!_dmChs.length){list.innerHTML='<div style="padding:6px 14px;font-size:.68rem;color:var(--muted-2)">Нет переписок</div>';return;}
-  list.innerHTML=_dmChs.map(ch=>{
-    const oid=(ch.members||[]).find(u=>u!==me.uid),o=allUsers[oid]||{displayName:'Пользователь'};
-    const pr=o.presence?.status||'offline';
-    const uc=unreadCounts[ch.id]||0;
-    const avI=o.photoURL?`<img src="${esc(o.photoURL)}" alt=""/>`:ini(o.displayName||o.email);
-    return`<div class="dm-item ${currentCh?.id===ch.id?'active':''}" data-chid="${esc(ch.id)}" role="button" tabindex="0">
-      <div class="dm-avatar">${avI}<div class="presence-dot ${pr}"></div></div>
-      <span class="dm-name">${esc(o.displayName||o.email||'—')}</span>
-      ${uc>0&&currentCh?.id!==ch.id?`<span class="sb-unread-badge">${uc>9?'9+':uc}</span>`:''}
+function makePreviewHtml(ch, isMe){
+  const lm = ch.lastMessage;
+  if(!lm) return `<div class="ch-preview no-msgs">Нет сообщений</div>`;
+  const icon = lm.attachmentType === 'image' ? '🖼 ' : lm.attachmentType === 'file' ? '📎 ' : '';
+  const text = icon + (lm.text || (lm.attachmentType ? 'Файл' : ''));
+  const authorLabel = lm.authorName === (me?.displayName || me?.email)
+    ? '<span class="ch-preview-author">Вы:</span>'
+    : ch.type !== 'direct'
+      ? `<span class="ch-preview-author">${esc((lm.authorName||'').split(' ')[0])}:</span>`
+      : '';
+  return `<div class="ch-preview">${authorLabel}<span class="ch-preview-text">${esc(text.slice(0,60))}</span></div>`;
+}
+
+function makeBadgeHtml(ch){
+  const uc = unreadCounts[ch.id] || 0;
+  const isActive = currentCh?.id === ch.id;
+  if(isActive) return '';
+  if(uc > 0) return `<span class="ch-badge">${uc > 99 ? '99+' : uc}</span>`;
+  // Show dot if channel has lastMessage but no unread count tracked yet
+  return '';
+}
+
+/* ── RENDER CHANNELS ── */
+function renderChannelList(chs){
+  const list = $('channel-list');
+  if(!chs.length){
+    list.innerHTML = '<div style="padding:10px 14px;font-size:.68rem;color:var(--muted-2)">Каналов нет — создайте первый</div>';
+    return;
+  }
+  // Sort: channels with recent lastMessage first, others at end
+  const sorted = [...chs].sort((a,b)=>{
+    const ta = a.lastMessage?.ts?.toDate?.()?.getTime() || 0;
+    const tb = b.lastMessage?.ts?.toDate?.()?.getTime() || 0;
+    return tb - ta;
+  });
+  list.innerHTML = sorted.map(ch => {
+    const isActive = currentCh?.id === ch.id;
+    const lmTime = ch.lastMessage?.ts ? fmtSbTime(ch.lastMessage.ts) : '';
+    const icon = ch.type === 'private' ? '🔒' : '#';
+    return `<div class="ch-card ${isActive?'active':''}" data-chid="${esc(ch.id)}" role="button" tabindex="0">
+      <div class="ch-icon-box">${icon}</div>
+      <div class="ch-body">
+        <div class="ch-top">
+          <span class="ch-name">${esc(ch.name)}</span>
+          ${lmTime ? `<span class="ch-time">${lmTime}</span>` : ''}
+          ${makeBadgeHtml(ch)}
+        </div>
+        ${makePreviewHtml(ch, false)}
+      </div>
     </div>`;
   }).join('');
-  list.querySelectorAll('.dm-item').forEach(el=>el.addEventListener('click',()=>openChannel(el.dataset.chid)));
+  list.querySelectorAll('.ch-card').forEach(el =>
+    el.addEventListener('click', () => openChannel(el.dataset.chid))
+  );
+}
+
+let _dmChs = [];
+function renderDMListFromChannels(dms){ _dmChs = dms; renderDMList(); }
+function renderDMList(){
+  const list = $('dm-list');
+  if(!_dmChs.length){
+    list.innerHTML = '<div style="padding:10px 14px;font-size:.68rem;color:var(--muted-2)">Нет переписок</div>';
+    return;
+  }
+  // Sort by last message time
+  const sorted = [..._dmChs].sort((a,b)=>{
+    const ta = a.lastMessage?.ts?.toDate?.()?.getTime() || 0;
+    const tb = b.lastMessage?.ts?.toDate?.()?.getTime() || 0;
+    return tb - ta;
+  });
+  list.innerHTML = sorted.map(ch => {
+    const oid = (ch.members||[]).find(u => u !== me.uid);
+    const o   = allUsers[oid] || { displayName: 'Пользователь' };
+    const pr  = o.presence?.status || 'offline';
+    const isActive = currentCh?.id === ch.id;
+    const lmTime = ch.lastMessage?.ts ? fmtSbTime(ch.lastMessage.ts) : '';
+    const avContent = o.photoURL
+      ? `<img src="${esc(o.photoURL)}" alt=""/>`
+      : `<span>${ini(o.displayName||o.email)}</span>`;
+    return `<div class="ch-card ${isActive?'active':''}" data-chid="${esc(ch.id)}" role="button" tabindex="0">
+      <div class="ch-avatar">
+        ${avContent}
+        <div class="presence-dot ${pr}"></div>
+      </div>
+      <div class="ch-body">
+        <div class="ch-top">
+          <span class="ch-name">${esc(o.displayName || o.email || '—')}</span>
+          ${lmTime ? `<span class="ch-time">${lmTime}</span>` : ''}
+          ${makeBadgeHtml(ch)}
+        </div>
+        ${makePreviewHtml(ch, false)}
+      </div>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('.ch-card').forEach(el =>
+    el.addEventListener('click', () => openChannel(el.dataset.chid))
+  );
 }
 
 /* ── OPEN CHANNEL ── */
@@ -1036,7 +1177,7 @@ async function openChannel(chId){
     $('ch-icon').textContent=chData.type==='private'?'🔒':'#';
     $('ch-name').textContent=chData.name||'';$('ch-desc').textContent=chData.description||'';
   }
-  document.querySelectorAll('.sb-item,.dm-item').forEach(el=>el.classList.toggle('active',el.dataset.chid===chId));
+  document.querySelectorAll('.ch-card').forEach(el=>el.classList.toggle('active',el.dataset.chid===chId));
   clearReply();cancelUpload();
   loadPinnedMsgs(chId);
   startMessageListener(chId);
