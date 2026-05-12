@@ -1486,16 +1486,18 @@ function fullRender(msgs){
 /* ── APPEND NEW MESSAGE (incremental) ── */
 function appendMessage(msg,animate){
   const list=$('msg-list');
-  const lastMsg=currentMsgs[currentMsgs.length-2]; // previous before this one
   const ts=msgTs(msg);
   const dk=ts.toDateString();
-  // Date divider — только при смене дня
-  const lastDiv=list.querySelector('.date-div:last-of-type');
-  if(!lastDiv||lastDiv.dataset.date!==dk){
+  // Надёжная проверка: берём дату последнего date-div из DOM
+  // (не lastElementChild — он может быть msg-group)
+  const allDateDivs=list.querySelectorAll('.date-div');
+  const lastDateDivDate=allDateDivs.length ? allDateDivs[allDateDivs.length-1].dataset.date : null;
+  if(lastDateDivDate!==dk){
     const dd=makeDateDiv(ts);
-    dd.dataset.date=dk;
     list.appendChild(dd);
   }
+  // Для группировки берём предпоследнее в currentMsgs (последнее — это текущее msg, ещё не в массиве)
+  const lastMsg=currentMsgs.length>=2 ? currentMsgs[currentMsgs.length-2] : null;
   const grouped=lastMsg&&shouldGroup(msg,lastMsg.authorId,lastMsg.clientTs||0)&&!msg.replyTo;
   const el=makeMsgEl(msg,grouped,animate);
   list.appendChild(el);
