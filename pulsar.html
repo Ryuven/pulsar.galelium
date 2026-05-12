@@ -555,71 +555,226 @@ a{color:inherit;text-decoration:none}
 .btn-danger{background:rgba(208,96,112,.12);color:var(--red);border:1px solid rgba(208,96,112,.2)}.btn-danger:hover{background:rgba(208,96,112,.2)}
 
 /* Profile */
-/* ── PROFILE MODAL (Discord-style) ── */
-#modal-profile .modal{width:min(480px,calc(100vw - 20px));overflow:hidden;padding:0;border-radius:var(--r)}
+/* ── PROFILE MODAL ── */
+#modal-profile .modal{
+  width:min(460px,calc(100vw - 20px));
+  overflow:hidden;padding:0;
+  border-radius:12px;
+}
 #modal-profile .modal::before{display:none}
 #modal-profile .modal-head,#modal-profile .modal-body{display:none}
 
 /* Баннер */
-.prof-banner{height:100px;background:linear-gradient(135deg,#1a1428 0%,#2a1f0e 50%,#0e1a28 100%);position:relative;flex-shrink:0;overflow:hidden}
-.prof-banner-gradient{position:absolute;inset:0;background:linear-gradient(135deg,rgba(200,169,110,.25) 0%,rgba(106,159,216,.15) 60%,rgba(155,127,212,.15) 100%)}
-.prof-close-btn{position:absolute;top:10px;right:10px;z-index:10;width:28px;height:28px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.7);cursor:pointer;transition:background var(--tf),color var(--tf)}
-.prof-close-btn:hover{background:rgba(0,0,0,.8);color:#fff}
+.prof-banner{
+  height:110px;
+  background:linear-gradient(135deg,#1c1230 0%,#2d1e08 45%,#0c1e32 100%);
+  position:relative;flex-shrink:0;overflow:hidden;
+}
+.prof-banner::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,
+    rgba(200,169,110,.22) 0%,
+    rgba(106,159,216,.12) 55%,
+    rgba(155,127,212,.14) 100%);
+}
+.prof-banner-dots{
+  position:absolute;inset:0;
+  background-image:radial-gradient(rgba(255,255,255,.04) 1px,transparent 1px);
+  background-size:20px 20px;
+}
+.prof-close-btn{
+  position:absolute;top:12px;right:12px;z-index:10;
+  width:28px;height:28px;
+  background:rgba(0,0,0,.45);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  color:rgba(255,255,255,.65);cursor:pointer;
+  transition:background var(--tf),color var(--tf);
+}
+.prof-close-btn:hover{background:rgba(0,0,0,.75);color:#fff}
 
-/* Аватар поверх баннера */
-.prof-av-wrap{position:absolute;bottom:-22px;left:20px;width:76px;height:76px;border-radius:50%;background:var(--surface-3);border:4px solid var(--surface);display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:800;color:var(--accent);overflow:visible;cursor:pointer;z-index:2}
-.prof-av-inner{width:100%;height:100%;border-radius:50%;overflow:hidden;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:800;color:var(--accent);position:relative}
-.prof-av-inner img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:50%}
-.prof-av-wrap:hover .prof-av-inner::after{content:'📷';position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;font-size:1.1rem;border-radius:50%}
-.prof-av-status{position:absolute;bottom:2px;right:2px;width:18px;height:18px;border-radius:50%;border:3px solid var(--surface);z-index:3;transition:background .3s}
-.prof-av-status.online{background:var(--green)}
-.prof-av-status.away{background:#d4a843}
+/* Аватар — выходит из баннера, border фиксирован */
+.prof-av-wrap{
+  position:absolute;
+  bottom:-28px;left:22px;
+  width:80px;height:80px;
+  border-radius:50%;
+  border:4px solid var(--surface);
+  background:var(--surface-3);
+  z-index:5;cursor:pointer;
+  flex-shrink:0;
+}
+.prof-av-inner{
+  width:100%;height:100%;border-radius:50%;
+  overflow:hidden;
+  background:var(--accent-dim);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.8rem;font-weight:800;color:var(--accent);
+  position:relative;
+}
+.prof-av-inner img{
+  width:100%;height:100%;object-fit:cover;
+  position:absolute;inset:0;border-radius:50%;
+}
+.prof-av-wrap:hover .prof-av-inner::after{
+  content:'📷';
+  position:absolute;inset:0;
+  background:rgba(0,0,0,.52);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;border-radius:50%;
+}
+/* Статус-dot прямо на аватаре */
+.prof-av-status{
+  position:absolute;bottom:3px;right:3px;
+  width:16px;height:16px;border-radius:50%;
+  border:3px solid var(--surface);
+  z-index:6;transition:background .3s;
+}
+.prof-av-status.online {background:var(--green)}
+.prof-av-status.away   {background:#d4a843}
 .prof-av-status.offline{background:var(--muted-2)}
 
-/* Тело */
-.prof-body{padding:30px 20px 0}
-.prof-name-row{display:flex;align-items:center;gap:8px;margin-bottom:2px;flex-wrap:wrap}
-.prof-name{font-family:var(--font-display);font-weight:800;font-size:1.12rem;color:var(--text);line-height:1.2}
-.prof-role-badge{font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:4px;font-weight:700;flex-shrink:0}
-.prof-role-badge.admin{background:rgba(208,96,112,.12);color:var(--red);border:1px solid rgba(208,96,112,.25)}
-.prof-role-badge.user{background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent-mid)}
-.prof-username{font-size:.72rem;color:var(--muted);margin-bottom:14px}
+/* Тело профиля */
+.prof-body{
+  padding:38px 22px 4px;
+}
 
-/* Статы */
-.prof-stats{display:flex;gap:6px;margin-bottom:14px}
-.prof-stat{flex:1;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r);padding:10px 0;text-align:center;transition:border-color var(--tf)}
-.prof-stat:hover{border-color:var(--border-h)}
-.prof-stat-num{font-family:var(--font-display);font-weight:800;font-size:1rem;color:var(--accent)}
-.prof-stat-label{font-size:.56rem;color:var(--muted-2);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+/* Имя + роль + email */
+.prof-name-row{display:flex;align-items:center;gap:8px;margin-bottom:3px;flex-wrap:wrap}
+.prof-name{
+  font-family:var(--font-display);font-weight:800;
+  font-size:1.1rem;color:var(--text);line-height:1.2;
+}
+.prof-role-badge{
+  font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:2px 7px;border-radius:4px;font-weight:700;flex-shrink:0;
+}
+.prof-role-badge.admin{background:rgba(208,96,112,.1);color:var(--red);border:1px solid rgba(208,96,112,.22)}
+.prof-role-badge.user {background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent-mid)}
+.prof-username{font-size:.7rem;color:var(--muted);margin-bottom:16px}
 
-/* Секция */
-.prof-section{margin-bottom:14px}
-.prof-section-title{font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted-2);margin-bottom:6px;font-weight:600}
-.prof-bio{font-size:.78rem;color:var(--muted);line-height:1.6;min-height:18px}
+/* Карточка-профиль (белый блок под именем) */
+.prof-card{
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  overflow:hidden;
+  margin-bottom:14px;
+}
+.prof-card-section{
+  padding:14px 16px;
+  border-bottom:1px solid var(--border);
+}
+.prof-card-section:last-child{border-bottom:none}
+
+/* Статы внутри карточки */
+.prof-stats{display:flex;gap:0}
+.prof-stat{
+  flex:1;padding:14px 0;text-align:center;
+  border-right:1px solid var(--border);
+}
+.prof-stat:last-child{border-right:none}
+.prof-stat-num{
+  font-family:var(--font-display);font-weight:800;
+  font-size:.98rem;color:var(--accent);line-height:1;
+}
+.prof-stat-label{
+  font-size:.54rem;color:var(--muted-2);
+  text-transform:uppercase;letter-spacing:.08em;
+  margin-top:3px;
+}
+
+/* Заголовок секции внутри карточки */
+.prof-section-title{
+  font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--muted-2);margin-bottom:6px;font-weight:600;
+}
+.prof-bio{
+  font-size:.78rem;color:var(--text);line-height:1.6;
+}
 .prof-bio.empty{font-style:italic;color:var(--muted-3)}
+
 .prof-divider{height:1px;background:var(--border);margin:14px 0}
 
 /* Статус-пикер */
-.prof-status-btns{display:flex;gap:4px;flex-wrap:wrap}
-.prof-status-btn{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;font-size:.66rem;border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all var(--tf);background:none}
+.prof-status-btns{display:flex;gap:5px;flex-wrap:wrap}
+.prof-status-btn{
+  display:flex;align-items:center;gap:5px;
+  padding:5px 12px;border-radius:20px;
+  font-size:.66rem;border:1px solid var(--border);
+  color:var(--muted);cursor:pointer;
+  transition:all .15s;background:none;
+}
 .prof-status-btn:hover{border-color:var(--border-h);color:var(--text)}
-.prof-status-btn.active.online{background:rgba(76,175,130,.08);border-color:rgba(76,175,130,.4);color:var(--green)}
-.prof-status-btn.active.away{background:rgba(212,168,67,.08);border-color:rgba(212,168,67,.4);color:#d4a843}
-.prof-status-btn.active.offline{background:rgba(72,70,63,.15);border-color:rgba(72,70,63,.5);color:var(--muted)}
+.prof-status-btn.active.online {background:rgba(76,175,130,.08);border-color:rgba(76,175,130,.4);color:var(--green)}
+.prof-status-btn.active.away   {background:rgba(212,168,67,.08);border-color:rgba(212,168,67,.4);color:#d4a843}
+.prof-status-btn.active.offline{background:rgba(72,70,63,.14);border-color:rgba(72,70,63,.5);color:var(--muted)}
 .prof-sdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.prof-status-btn.active.online .prof-sdot{background:var(--green)}
-.prof-status-btn.active.away .prof-sdot{background:#d4a843}
+.prof-status-btn.active.online .prof-sdot {background:var(--green)}
+.prof-status-btn.active.away   .prof-sdot {background:#d4a843}
 .prof-status-btn.active.offline .prof-sdot{background:var(--muted-2)}
-.prof-status-btn:not(.active) .prof-sdot{background:var(--muted-2)}
+.prof-status-btn:not(.active) .prof-sdot  {background:var(--muted-2)}
 
-/* Действия чужой профиль */
-.prof-actions{display:flex;gap:8px;margin-bottom:14px}
-.prof-action-btn{flex:1;padding:9px;border-radius:var(--r);font-size:.72rem;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:opacity var(--tf),background var(--tf);border:none}
-.prof-action-btn.primary{background:var(--accent);color:#08080d}.prof-action-btn.primary:hover{opacity:.85}
-.prof-action-btn.ghost{background:var(--surface-2);color:var(--muted);border:1px solid var(--border)}.prof-action-btn.ghost:hover{border-color:var(--border-h);color:var(--text)}
+/* Поля формы внутри карточки */
+.prof-field{margin-bottom:12px}
+.prof-field:last-child{margin-bottom:0}
+.prof-field label{
+  font-size:.56rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted-2);display:block;margin-bottom:6px;font-weight:600;
+}
+.prof-field input,.prof-field textarea{
+  width:100%;background:var(--surface-3);
+  border:1px solid var(--border);color:var(--text);
+  font-size:.8rem;padding:9px 11px;
+  border-radius:var(--r);transition:border-color .15s;
+  font-family:var(--font);
+}
+.prof-field input:focus,.prof-field textarea:focus{
+  border-color:var(--accent-mid);outline:none;
+}
+.prof-field input::placeholder,.prof-field textarea::placeholder{color:var(--muted-2)}
+.prof-field textarea{resize:none;line-height:1.5}
+
+/* Предпросмотр аватара */
+.prof-av-preview-row{
+  display:none;align-items:center;gap:10px;margin-top:8px;
+}
+.prof-av-preview-row.visible{display:flex}
+.prof-av-preview-img{
+  width:38px;height:38px;border-radius:50%;
+  object-fit:cover;border:2px solid var(--border);
+  background:var(--surface-3);
+}
+.prof-av-preview-label{font-size:.66rem;color:var(--muted)}
+
+/* Действия для чужого профиля */
+.prof-actions{display:flex;gap:8px;padding:0 22px 16px}
+.prof-action-btn{
+  flex:1;padding:9px 12px;border-radius:var(--r);
+  font-size:.72rem;font-weight:600;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  cursor:pointer;transition:opacity var(--tf),background var(--tf),border-color var(--tf);
+  border:none;
+}
+.prof-action-btn.primary{background:var(--accent);color:#08080d}
+.prof-action-btn.primary:hover{opacity:.85}
+.prof-action-btn.ghost{
+  background:var(--surface-2);color:var(--muted);
+  border:1px solid var(--border);
+}
+.prof-action-btn.ghost:hover{border-color:var(--border-h);color:var(--text)}
 
 /* Footer */
-.prof-foot{display:flex;gap:8px;justify-content:flex-end;padding:14px 20px;border-top:1px solid var(--border)}
+.prof-foot{
+  display:flex;gap:8px;justify-content:flex-end;
+  padding:14px 22px;border-top:1px solid var(--border);
+}
+
+/* Прокручиваемая область профиля */
+.prof-scroll{
+  overflow-y:auto;
+  max-height:calc(90svh - 110px);
+}
 
 
 /* Pinned */
@@ -954,99 +1109,118 @@ a{color:inherit;text-decoration:none}
 </div>
 <div class="modal-overlay" id="modal-profile">
   <div class="modal" style="padding:0">
-    <!-- Баннер -->
+
+    <!-- Баннер + аватар -->
     <div class="prof-banner">
-      <div class="prof-banner-gradient"></div>
+      <div class="prof-banner-dots"></div>
       <button class="prof-close-btn" data-modal="modal-profile">
         <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1L1 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
       </button>
-      <!-- Аватар -->
       <div class="prof-av-wrap" id="prof-av-wrap">
         <div class="prof-av-inner" id="profile-av-big">?</div>
         <div class="prof-av-status offline" id="prof-av-status"></div>
       </div>
     </div>
 
-    <!-- Тело — прокручиваемое -->
-    <div style="overflow-y:auto;max-height:calc(90svh - 100px)">
-      <div class="prof-body">
+    <!-- Прокручиваемая область -->
+    <div class="prof-scroll">
 
-        <!-- Имя + роль -->
+      <!-- Имя, email, роль -->
+      <div class="prof-body">
         <div class="prof-name-row">
           <div class="prof-name" id="profile-display-name">—</div>
           <span class="prof-role-badge user" id="prof-role-badge">участник</span>
         </div>
         <div class="prof-username" id="profile-email-label">—</div>
+      </div>
+
+      <!-- Действия для чужого профиля -->
+      <div class="prof-actions" id="prof-other-actions" style="display:none">
+        <button class="prof-action-btn primary" id="prof-btn-dm">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M1 8V3a2 2 0 012-2h8a2 2 0 012 2v5a2 2 0 01-2 2H9l-3 2v-2H3a2 2 0 01-2-2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+          Написать
+        </button>
+        <button class="prof-action-btn ghost" id="prof-btn-mention">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M9 7a2 2 0 11-4 0 2 2 0 014 0z" stroke="currentColor" stroke-width="1.2"/><path d="M11 7a4 4 0 10-1.5 3.1M11 7v2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Упомянуть
+        </button>
+      </div>
+
+      <!-- Карточка: статы + био + статус + редактирование -->
+      <div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:10px">
 
         <!-- Статы -->
-        <div class="prof-stats">
-          <div class="prof-stat"><div class="prof-stat-num" id="stat-msgs">—</div><div class="prof-stat-label">Сообщений</div></div>
-          <div class="prof-stat"><div class="prof-stat-num" id="stat-joined">—</div><div class="prof-stat-label">С нами</div></div>
-          <div class="prof-stat"><div class="prof-stat-num" id="stat-channels">—</div><div class="prof-stat-label">Каналов</div></div>
-        </div>
-
-        <!-- О себе -->
-        <div class="prof-section" id="prof-bio-section">
-          <div class="prof-section-title">О себе</div>
-          <div class="prof-bio empty" id="prof-bio-view">Нет информации</div>
-        </div>
-
-        <div class="prof-divider"></div>
-
-        <!-- Статус (только свой профиль) -->
-        <div class="prof-section" id="profile-status-row">
-          <div class="prof-section-title">Статус</div>
-          <div class="prof-status-btns">
-            <button class="prof-status-btn online" data-s="online"><span class="prof-sdot"></span>В сети</button>
-            <button class="prof-status-btn away"   data-s="away">  <span class="prof-sdot"></span>Отошёл</button>
-            <button class="prof-status-btn offline" data-s="offline"><span class="prof-sdot"></span>Не беспокоить</button>
+        <div class="prof-card">
+          <div class="prof-stats">
+            <div class="prof-stat">
+              <div class="prof-stat-num" id="stat-msgs">—</div>
+              <div class="prof-stat-label">Сообщений</div>
+            </div>
+            <div class="prof-stat">
+              <div class="prof-stat-num" id="stat-joined">—</div>
+              <div class="prof-stat-label">С нами</div>
+            </div>
+            <div class="prof-stat">
+              <div class="prof-stat-num" id="stat-channels">—</div>
+              <div class="prof-stat-label">Каналов</div>
+            </div>
           </div>
         </div>
 
-        <!-- Форма редактирования (только свой профиль) -->
-        <div id="profile-edit-section" class="prof-edit-wrap">
-          <div class="prof-divider"></div>
-          <div class="prof-section-title">Редактировать профиль</div>
-          <div style="display:flex;flex-direction:column;gap:10px">
-            <div class="field" style="margin:0">
-              <label class="field-label">Отображаемое имя</label>
-              <input class="field-input" id="profile-name-input" placeholder="Ваше имя" autocomplete="off"/>
+        <!-- О себе -->
+        <div class="prof-card">
+          <div class="prof-card-section">
+            <div class="prof-section-title">О себе</div>
+            <div class="prof-bio empty" id="prof-bio-view">Нет информации</div>
+          </div>
+        </div>
+
+        <!-- Статус (только свой) -->
+        <div class="prof-card" id="profile-status-row">
+          <div class="prof-card-section">
+            <div class="prof-section-title">Статус</div>
+            <div class="prof-status-btns">
+              <button class="prof-status-btn online"  data-s="online"><span class="prof-sdot"></span>В сети</button>
+              <button class="prof-status-btn away"    data-s="away"><span class="prof-sdot"></span>Отошёл</button>
+              <button class="prof-status-btn offline" data-s="offline"><span class="prof-sdot"></span>Не беспокоить</button>
             </div>
-            <div class="field" style="margin:0">
-              <label class="field-label">О себе</label>
-              <textarea class="field-input" id="profile-bio-input" placeholder="Расскажите о себе…" rows="3" style="resize:none;line-height:1.5"></textarea>
-            </div>
-            <div class="field" style="margin:0">
-              <label class="field-label">Аватар (URL изображения)</label>
-              <input class="field-input" id="profile-avatar-url" placeholder="https://…" type="url"/>
-              <div id="prof-av-preview-row" style="display:none;align-items:center;gap:8px;margin-top:8px">
-                <img id="prof-av-preview" src="" alt="" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid var(--border)"/>
-                <span style="font-size:.68rem;color:var(--muted)">Предпросмотр</span>
+          </div>
+        </div>
+
+        <!-- Редактирование (только свой) -->
+        <div class="prof-card" id="profile-edit-section">
+          <div class="prof-card-section">
+            <div class="prof-section-title">Редактировать профиль</div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div class="prof-field">
+                <label>Отображаемое имя</label>
+                <input id="profile-name-input" placeholder="Ваше имя" autocomplete="off"/>
+              </div>
+              <div class="prof-field">
+                <label>О себе</label>
+                <textarea id="profile-bio-input" placeholder="Расскажите о себе…" rows="3"></textarea>
+              </div>
+              <div class="prof-field">
+                <label>Аватар (URL изображения)</label>
+                <input id="profile-avatar-url" placeholder="https://…" type="url"/>
+                <div class="prof-av-preview-row" id="prof-av-preview-row">
+                  <img class="prof-av-preview-img" id="prof-av-preview" src="" alt=""/>
+                  <span class="prof-av-preview-label">Предпросмотр</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Действия для чужого профиля -->
-        <div class="prof-actions" id="prof-other-actions" style="display:none">
-          <button class="prof-action-btn primary" id="prof-btn-dm">
-            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M1 8V3a2 2 0 012-2h8a2 2 0 012 2v5a2 2 0 01-2 2H9l-3 2v-2H3a2 2 0 01-2-2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
-            Написать
-          </button>
-          <button class="prof-action-btn ghost" id="prof-btn-mention">
-            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M9 7a2 2 0 11-4 0 2 2 0 014 0z" stroke="currentColor" stroke-width="1.2"/><path d="M11 7a4 4 0 10-1.5 3.1M11 7v2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-            Упомянуть
-          </button>
-        </div>
-
-      </div>
+      </div><!-- /cards -->
 
       <!-- Footer -->
       <div class="prof-foot" id="profile-foot">
         <button class="btn btn-ghost" data-modal="modal-profile">Отмена</button>
         <button class="btn btn-primary" id="btn-save-profile">Сохранить</button>
       </div>
-    </div>
+
+    </div><!-- /prof-scroll -->
   </div>
 </div>
 <div class="modal-overlay" id="modal-pinned">
@@ -2005,8 +2179,8 @@ async function openUserProfile(uid){
 function updateProfAvPreview(url){
   const row = $('prof-av-preview-row');
   const img = $('prof-av-preview');
-  if(url){ img.src=url; row.style.display='flex'; }
-  else row.style.display='none';
+  if(url && url.startsWith('http')){ img.src=url; row.classList.add('visible'); }
+  else { img.src=''; row.classList.remove('visible'); }
 }
 
 async function saveProfile(){
