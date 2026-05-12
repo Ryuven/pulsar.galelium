@@ -319,9 +319,9 @@ a{color:inherit;text-decoration:none}
 .msg-bubble{position:relative;padding:7px 11px;word-break:break-word;transition:background .1s}
 .msg-row:not(.is-me) .msg-bubble{background:var(--surface-2);border:1px solid var(--border);border-radius:16px 16px 16px 4px}
 .msg-row.is-me .msg-bubble{background:rgba(200,169,110,.13);border:1px solid rgba(200,169,110,.2);border-radius:16px 16px 4px 16px}
-/* Consecutive — less rounding */
-.msg-group:not(.msg-first) .msg-row:not(.is-me) .msg-bubble{border-top-left-radius:4px}
-.msg-group:not(.msg-first) .msg-row.is-me .msg-bubble{border-top-right-radius:4px}
+/* Consecutive — скругление только у сгруппированных (тот же автор) */
+.msg-group.msg-grouped .msg-row:not(.is-me) .msg-bubble{border-top-left-radius:4px}
+.msg-group.msg-grouped .msg-row.is-me .msg-bubble{border-top-right-radius:4px}
 /* Text */
 .msg-text{font-size:.8rem;line-height:1.6;color:var(--text);white-space:pre-wrap}
 .msg-row.is-me .msg-text{color:#e8dcc8}
@@ -1496,8 +1496,11 @@ function appendMessage(msg,animate){
     const dd=makeDateDiv(ts);
     list.appendChild(dd);
   }
-  // Для группировки берём предпоследнее в currentMsgs (последнее — это текущее msg, ещё не в массиве)
-  const lastMsg=currentMsgs.length>=2 ? currentMsgs[currentMsgs.length-2] : null;
+  // Берём предыдущее сообщение по msgId последнего msg-group в DOM
+  // (надёжнее чем индекс массива, т.к. currentMsgs мог обновиться)
+  const lastGroup=list.querySelector('.msg-group:last-of-type');
+  const lastMsgId=lastGroup?.dataset.msgid;
+  const lastMsg=lastMsgId ? currentMsgs.find(m=>m.id===lastMsgId) : null;
   const grouped=lastMsg&&shouldGroup(msg,lastMsg.authorId,lastMsg.clientTs||0)&&!msg.replyTo;
   const el=makeMsgEl(msg,grouped,animate);
   list.appendChild(el);
@@ -1601,7 +1604,7 @@ function makeMsgEl(msg, grouped, animate){
   const isDM = currentCh?.type === 'direct';
 
   const div = document.createElement('div');
-  div.className = `msg-group${!grouped?' msg-first':''}${isMe?' from-me':''}${animate?' new-msg':''}`;
+  div.className = `msg-group${!grouped?' msg-first':' msg-grouped'}${isMe?' from-me':''}${animate?' new-msg':''}`;
   div.dataset.msgid = msg.id;
 
   // Мета: для каналов — всегда у первого; для DM — только у чужих первых
