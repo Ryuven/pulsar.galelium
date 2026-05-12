@@ -1509,23 +1509,55 @@ function appendMessage(msg,animate){
 function updateMessageEl(msg){
   const group=document.querySelector(`.msg-group[data-msgid="${msg.id}"]`);
   if(!group)return;
-  // Update text
-  const textEl=group.querySelector('.msg-text');
-  if(textEl&&!msg.deleted)textEl.innerHTML=renderText(msg.text||'');
-  if(textEl&&msg.deleted){textEl.innerHTML='Сообщение удалено';textEl.className='msg-text deleted';}
-  // Update reactions
-  const reactWrap=group.querySelector('.msg-reactions');
+
+  // 1. Текст — обновляем только текстовый узел, сохраняем tsInline
+  const textEl=group.querySelector('.msg-text[data-msgid]');
+  if(textEl){
+    if(msg.deleted){
+      textEl.textContent='Сообщение удалено';
+      textEl.className='msg-text deleted';
+    } else {
+      // Сохраняем tsInline если есть
+      const tsSpan=textEl.querySelector('.msg-ts-inline');
+      textEl.innerHTML=renderText(msg.text||'');
+      if(tsSpan) textEl.appendChild(tsSpan.cloneNode(true));
+    }
+  }
+
+  // 2. Реакции — ищем в msg-bubble-wrap
+  const bubbleWrap=group.querySelector('.msg-bubble-wrap');
+  if(!bubbleWrap) return;
+  const reactWrap=bubbleWrap.querySelector('.msg-reactions');
   const rl=(['👍','❤️','🔥','😂','😮']).filter(e=>(msg.reactions||{})[e]?.length);
   if(rl.length){
-    const reactHtml=`<div class="msg-reactions">${rl.map(e=>`<button class="reaction-btn ${(msg.reactions[e]||[]).includes(me.uid)?'active':''}" data-msgid="${esc(msg.id)}" data-emoji="${e}">${e}<span class="reaction-count">${msg.reactions[e].length}</span></button>`).join('')}</div>`;
-    if(reactWrap)reactWrap.outerHTML=reactHtml;
-    else group.querySelector('.msg-body')?.insertAdjacentHTML('beforeend',reactHtml);
-  }else if(reactWrap){reactWrap.remove();}
-  // Update edited tag
+    const newReact=document.createElement('div');
+    newReact.className='msg-reactions';
+    newReact.innerHTML=rl.map(e=>`<button class="reaction-btn ${(msg.reactions[e]||[]).includes(me.uid)?'active':''}" data-msgid="${esc(msg.id)}" data-emoji="${e}">${e}<span class="reaction-count">${msg.reactions[e].length}</span></button>`).join('');
+    if(reactWrap) reactWrap.replaceWith(newReact);
+    else bubbleWrap.appendChild(newReact);
+    // Привязываем события
+    newReact.querySelectorAll('.reaction-btn').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();toggleReact(b.dataset.msgid,b.dataset.emoji);}));
+  } else if(reactWrap){
+    reactWrap.remove();
+  }
+
+  // 3. Тег "изменено"
   const meta=group.querySelector('.msg-meta');
-  if(meta&&msg.edited&&!meta.querySelector('.msg-edited-tag')){meta.insertAdjacentHTML('beforeend','<span class="msg-edited-tag">(изм.)</span>');}
-  // Re-bind reaction buttons
-  group.querySelectorAll('.reaction-btn').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();toggleReact(b.dataset.msgid,b.dataset.emoji);}));
+  if(meta&&msg.edited&&!meta.querySelector('.msg-edited-tag')){
+    meta.insertAdjacentHTML('beforeend','<span class="msg-edited-tag">(изм.)</span>');
+  }
+
+  // 4. Перепривязываем клик на пузырёк (на случай перерисовки)
+  const bubble=group.querySelector('.msg-bubble');
+  if(bubble && !bubble._clickBound){
+    bubble._clickBound=true;
+    bubble.addEventListener('click',e=>{
+      e.stopPropagation();
+      const wasOpen=group.classList.contains('actions-open');
+      document.querySelectorAll('.msg-group.actions-open').forEach(g=>g.classList.remove('actions-open'));
+      if(!wasOpen) group.classList.add('actions-open');
+    });
+  }
 }
 
 /* ── HELPERS FOR BUILDING MESSAGE HTML ── */
@@ -1631,6 +1663,8 @@ function makeMsgEl(msg, grouped, animate){
 function bindMsgEvents(root){
   // Клик на пузырёк — показать/скрыть тулбар
   root.querySelectorAll('.msg-bubble').forEach(bubble=>{
+    if(bubble._clickBound) return;
+    bubble._clickBound=true;
     bubble.addEventListener('click', e=>{
       e.stopPropagation();
       const group=bubble.closest('.msg-group');
@@ -1687,14 +1721,15 @@ async function pinMessage(msgId,isPinned){
 function msgAction(action,msgId,isPinned=false){
   const msg=currentMsgs.find(m=>m.id===msgId);if(!msg)return;
   if(action==='reply'){replyTo={id:msg.id,text:msg.text||'',authorName:msg.authorName};$('reply-bar').classList.add('visible');updateInputRadius();$('reply-to-name').textContent=msg.authorName;$('reply-preview').textContent=(msg.text||'Вложение').slice(0,80);$('msg-input').focus();}
-  if(action==='edit'&&msg.authorId===me.uid&&!msg.deleted)startEdit(msgId,msg.text||'');
+  if(action==='edit'&&msg.authorId===me.uid&&!msg.deleted){msg._prevText=msg.text;startEdit(msgId,msg.text||'');}
   if(action==='delete'&&msg.authorId===me.uid){if(!confirm('Удалить сообщение?'))return;delMsg(msgId);}
   if(action==='pin')pinMessage(msgId,isPinned);
   if(action==='thread')openThread(msgId);
 }
 function startEdit(msgId,text){
   cancelEdit();editingId=msgId;
-  const el=document.querySelector(`.msg-text[data-msgid="${msgId}"]`);if(!el)return;
+  // Ищем текстовый элемент внутри пузырька
+  const el=document.querySelector(`.msg-bubble .msg-text[data-msgid="${msgId}"]`);if(!el)return;
   const w=document.createElement('div');w.className='msg-edit-wrap';w.dataset.editwrap=msgId;
   w.innerHTML=`<textarea class="msg-edit-input" rows="2">${esc(text)}</textarea><div class="msg-edit-btns"><button class="msg-edit-save">Сохранить</button><button class="msg-edit-cancel">Отмена</button><span class="msg-edit-hint">Enter — сохранить · Esc — отмена</span></div>`;
   el.replaceWith(w);
@@ -1705,13 +1740,45 @@ function startEdit(msgId,text){
   w.querySelector('.msg-edit-cancel').addEventListener('click',cancelEdit);
 }
 function cancelEdit(){if(!editingId)return;document.querySelector(`[data-editwrap="${editingId}"]`)?.remove();editingId=null;}
-async function saveEdit(msgId,t){const tx=t.trim();if(!tx||!currentCh)return;try{await updateDoc(doc(fdb,'pulsar_channels',currentCh.id,'messages',msgId),{text:tx,edited:true,editedAt:serverTimestamp()});editingId=null;}catch(e){toast('Ошибка: '+e.message,'err');}}
+async function saveEdit(msgId,t){
+  const tx=t.trim();if(!tx||!currentCh)return;
+  // Оптимистично обновляем локально
+  const msg=currentMsgs.find(m=>m.id===msgId);
+  if(msg){msg.text=tx;msg.edited=true;}
+  cancelEdit();
+  // Убираем редактор, показываем обновлённый текст
+  if(msg) updateMessageEl(msg);
+  try{
+    await updateDoc(doc(fdb,'pulsar_channels',currentCh.id,'messages',msgId),{text:tx,edited:true,editedAt:serverTimestamp()});
+    editingId=null;
+  }catch(e){
+    toast('Ошибка сохранения: '+e.message,'err');
+    // Откат
+    if(msg){msg.text=msg._prevText||tx;updateMessageEl(msg);}
+  }
+}
 async function delMsg(msgId){if(!currentCh)return;try{await updateDoc(doc(fdb,'pulsar_channels',currentCh.id,'messages',msgId),{deleted:true,text:''});}catch(e){toast('Ошибка: '+e.message,'err');}}
 async function toggleReact(msgId,emoji){
   if(!currentCh||!me)return;
   const ref=doc(fdb,'pulsar_channels',currentCh.id,'messages',msgId);
-  try{const s=await getDoc(ref);if(!s.exists())return;const users=(s.data().reactions||{})[emoji]||[];await updateDoc(ref,{[`reactions.${emoji}`]:users.includes(me.uid)?arrayRemove(me.uid):arrayUnion(me.uid)});}
-  catch(e){console.error('react:',e);}
+  // Оптимистичное обновление — сразу меняем UI, потом пишем в Firestore
+  const msg=currentMsgs.find(m=>m.id===msgId);
+  if(msg){
+    const users=(msg.reactions||{})[emoji]||[];
+    const hasMe=users.includes(me.uid);
+    // Обновляем локально
+    if(!msg.reactions) msg.reactions={};
+    if(hasMe) msg.reactions[emoji]=users.filter(u=>u!==me.uid);
+    else msg.reactions[emoji]=[...users,me.uid];
+    updateMessageEl(msg);
+  }
+  try{
+    await updateDoc(ref,{[`reactions.${emoji}`]:(msg?.reactions?.[emoji]||[]).includes(me.uid)?arrayUnion(me.uid):arrayRemove(me.uid)});
+  }catch(e){
+    // Откат при ошибке
+    console.error('react:',e);
+    if(msg) updateMessageEl(msg);
+  }
 }
 
 /* ── FILE UPLOAD ── */
